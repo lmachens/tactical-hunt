@@ -1,0 +1,32 @@
+{
+  "name": "tactical-hunt",
+  "version": "0.0.0",
+  "description": "Tactics whiteboard for games",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "dev": "node scripts/dev.js",
+    "test": "node --test",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lmachens/tactical-hunt.git"
+  },
+  "keywords": [
+    "games",
+    "whiteboard",
+    "tactics"
+  ],
+  "author": "Leon Machens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lmachens/tactical-hunt/issues"
+  },
+  "homepage": "https://github.com/lmachens/tactical-hunt#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.31",
+    "typescript": "^4.7.0-dev.20220506"
+  }
+}

@@ -1,0 +1,14 @@
+# Certificates
+certs/
+
+# Dependency directories
+node_modules/
+
+# Editors
+.vscode/
+
+# Generated output
+dist/
+
+# TypeScript cache
+*.tsbuildinfo
