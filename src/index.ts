@@ -1,57 +1,46 @@
 import http2 from "node:http2";
 import fs from "node:fs";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import subscribe from "./routes/subscribe.js";
+import favicon from "./routes/favicon.js";
+import scripts from "./routes/scripts.js";
+import styles from "./routes/styles.js";
+import html from "./routes/html.js";
+import notFound from "./routes/notFound.js";
 
 const PORT = 8443;
 const GREEN = "\x1b[32m";
 
 const server = http2.createSecureServer({
-  key: fs.readFileSync("certs/localhost-privkey.pem"),
-  cert: fs.readFileSync("certs/localhost-cert.pem"),
+  key: fs.readFileSync("./certs/localhost-privkey.pem"),
+  cert: fs.readFileSync("./certs/localhost-cert.pem"),
 });
 
 server.on("error", (err) => console.error(err));
+
+const routes: {
+  [path: string]: (
+    stream: http2.ServerHttp2Stream,
+    headers: http2.IncomingHttpHeaders
+  ) => void | Promise<void>;
+} = {
+  "/": html,
+  "/subscribe": subscribe,
+  "/favicon.ico": favicon,
+};
 server.on("stream", (stream, headers) => {
   const path = headers[":path"] as string;
+
   console.log(GREEN, `Request ${path}`);
-  if (path === "/favicon.ico") {
-    stream.respond({
-      "content-type": "image/x-icon",
-      ":status": 200,
-    });
-    stream.end(fs.readFileSync(__dirname + "/app/favicon.ico"));
+  const route = routes[path];
+  if (route) {
+    route(stream, headers);
   } else if (path.endsWith(".js")) {
-    const file = fs.readFileSync(__dirname + "/app" + path);
-
-    stream.respond({
-      "content-type": "text/javascript",
-      ":status": 200,
-    });
-    stream.end(file);
+    scripts(stream, headers);
   } else if (path.endsWith(".css")) {
-    const file = fs.readFileSync(__dirname + "/app" + path);
-
-    stream.respond({
-      "content-type": "text/css",
-      ":status": 200,
-    });
-    stream.end(file);
-  } else if (path === "/") {
-    stream.respond({
-      "content-type": "text/html; charset=utf-8",
-      ":status": 200,
-    });
-
-    stream.end(fs.readFileSync(__dirname + "/app/index.html"));
+    styles(stream, headers);
   } else {
-    stream.respond({
-      ":status": 404,
-    });
-    stream.end();
+    notFound(stream, headers);
   }
 });
 

@@ -1,6 +1,6 @@
 class AppTitle extends HTMLElement {
   connectedCallback() {
-    this.innerText = "Headline!!!🤘";
+    this.innerHTML = "<h1>Headline!!!🤘</h1>";
   }
 }
 
